@@ -1,0 +1,49 @@
+# application name
+spring:
+  application:
+    name: zuul-service
+
+# service discovery client config
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://registry:1111/eureka/
+  instance:
+    hostname: zuul
+
+# zuul configuration
+zuul:
+    forceOriginalQueryStringEncoding: true
+    decodeUrl: false
+    ignoredServices: '*'
+    routes:
+        truck-service:
+            path: /cliqhaul/**
+            serviceId: truck-service
+            stripPrefix: false
+
+# circuit Breaker (Hystrix)
+hystrix:
+  command:
+    truck-service:
+        execution:
+          isolation:
+            thread:
+              timeoutInMilliseconds: 90000
+
+# Load Balancer
+truck-service:
+    ribbon:
+        NIWSServerListClassName: com.netflix.niws.loadbalancer.DiscoveryEnabledNIWSServerList
+        DeploymentContextBasedVipAddresses: truck-service
+        ConnectTimeout: 1000
+        ReadTimeout: 3000
+        MaxTotalHttpConnection: 500
+        MaxConnectionsPerHost: 100
+
+
+# application port
+server:
+    port: 4000

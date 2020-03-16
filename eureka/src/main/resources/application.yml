@@ -1,0 +1,12 @@
+# Configure this Discovery Server
+eureka:
+  instance:
+    metaDataMap: 
+      instanceId: http://${eureka.instance.hostname}:${server.port}
+    hostname: localhost
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+
+server: 
+  port: 1111 #(HTTP Port) Tomcat

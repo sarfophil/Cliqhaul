@@ -1,0 +1,31 @@
+spring:
+    application:
+        name: truck-service
+    datasource:
+        url: jdbc:mysql://mysql:3306/vehicles_db?useSSL=false
+        username: root
+        password: 
+    jpa:
+        hibernate:
+            ddl-auto: create
+              
+    data:
+        rest:
+            basePath: /cliqhaul/api
+eureka:
+    client:
+        registerWithEureka: true
+        fetchRegistry: true
+        serviceUrl:
+            defaultZone: http://registry:1111/eureka/
+    instance:
+        hostname: truck
+
+truck-service:
+    ribbon:
+        NIWSServerListClassName: com.netflix.niws.loadbalancer.DiscoveryEnabledNIWSServerList
+        DeploymentContextBasedVipAddresses: truck-service
+
+server:
+    port: 5000
+

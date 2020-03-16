@@ -1,0 +1,55 @@
+version: '3'
+services:
+
+  # service discovery server image
+  registry:
+    container_name: eureka-registry
+    build: ./eureka
+    ports: 
+      - "1111:1111"
+    volumes: 
+      - .:/eureka-registry
+
+  # mysql
+  mysql:
+    container_name: mysql
+    image: mysql:latest
+    ports: 
+      - "3306:3306"
+    environment: 
+      MYSQL_DATABASE: vehicles_db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'true' 
+
+  # truck services
+  truck:
+    container_name: truck-service
+    build: ./truck-service
+    ports: 
+      - "5000:5000"
+    volumes: 
+      - ./truck-service:/service
+      - $HOME/.m2/repository:/root/.m2/repository
+    depends_on:
+      - registry
+      - mysql
+    environment: 
+      WAIT_HOSTS: mysql:3306
+    restart: on-failure
+
+  # zuul gateway
+  zuul:
+    container_name: zuul-gateway
+    build: ./zuul
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./zuul:/zuul
+      - $HOME/.m2/repository:/root/.m2/repository
+    depends_on:
+      - registry
+      - truck
+    environment:
+      WAIT_HOSTS: registry:1111
+    restart: on-failure
